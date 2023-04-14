@@ -1,0 +1,60 @@
+{
+  "name": "streamwire",
+  "version": "1.0.0",
+  "description": "Node.js Duplex wrapper for text-based protocols.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "server",
+    "client",
+    "typescript",
+    "socket",
+    "tcp",
+    "duplex",
+    "readable",
+    "writable",
+    "stream"
+  ],
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mat-sz/streamwire.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mat-sz/streamwire/issues"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ],
+    "__tests__/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  },
+  "homepage": "https://github.com/mat-sz/streamwire",
+  "author": "Mat Sz <contact@matsz.dev>",
+  "license": "BSD-3-Clause-Clear",
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^16.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
+    "eslint": "^8.38.0",
+    "husky": "^8.0.3",
+    "jest": "^29.5.0",
+    "lint-staged": "^13.2.1",
+    "prettier": "^2.8.7",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
+  }
+}
