@@ -1,10 +1,10 @@
 import { PassThrough } from 'stream';
-import { Wire } from '../src';
+import { Wire } from '../src/index.js';
 
 describe('Wire', () => {
   describe('readable', () => {
     it('should emit readable when data is received', () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       const wire = new Wire(stream);
       wire.on('readable', onReadable);
@@ -14,7 +14,7 @@ describe('Wire', () => {
     });
 
     it('should not emit readable when data is received and generators are pending', () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       const wire = new Wire(stream);
       wire.on('readable', onReadable);
@@ -26,7 +26,7 @@ describe('Wire', () => {
     });
 
     it('should emit readable when data is received, after generator is done and autoResume is true', async () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       const wire = new Wire(stream, { autoResume: true });
       wire.on('readable', onReadable);
@@ -41,7 +41,7 @@ describe('Wire', () => {
     });
 
     it('should not emit readable when data is received, after generator is done and autoResume is false', async () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       const wire = new Wire(stream, { autoResume: false });
       wire.on('readable', onReadable);
@@ -56,7 +56,7 @@ describe('Wire', () => {
     });
 
     it('should emit readable when data is received, after generator is done, autoResume is false, and resume was called', async () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       const wire = new Wire(stream, { autoResume: false });
       wire.on('readable', onReadable);
@@ -71,7 +71,7 @@ describe('Wire', () => {
     });
 
     it('should not emit readable when data is received, after generator is done, autoResume is true, and pause was called', async () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       const wire = new Wire(stream, { autoResume: true });
       wire.on('readable', onReadable);
@@ -87,7 +87,7 @@ describe('Wire', () => {
     });
 
     it('should emit readable if the constructor is called with a stream that already contains data', () => {
-      const onReadable = jest.fn();
+      const onReadable = vitest.fn();
       const stream = new PassThrough();
       stream.write('data');
 
@@ -106,22 +106,23 @@ describe('Wire', () => {
       expect(await wire.read(5)).toBe(' data');
     });
 
-    it('should wait for data to be available', done => {
+    it('should wait for data to be available', async () => {
       const stream = new PassThrough();
       const wire = new Wire(stream);
-      wire.read(4).then(data => {
+      const test = async () => {
+        const data = await wire.read(4);
         expect(data).toBe('some');
-        done();
-      });
+      };
       stream.write('some data');
+      await test();
     });
 
     it('should timeout if data is not available in time', () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       const stream = new PassThrough();
       const wire = new Wire(stream);
       expect(wire.read(4)).rejects.toThrow(Error);
-      jest.runAllTimers();
+      vi.runAllTimers();
     });
 
     it('should be able to read data if the constructor is called with a stream that already contains data', async () => {
@@ -141,14 +142,16 @@ describe('Wire', () => {
       expect(await wire.readLine()).toBe('some data');
     });
 
-    it('should wait for data to be available', done => {
+    it('should wait for data to be available', async () => {
       const stream = new PassThrough();
       const wire = new Wire(stream);
-      wire.readLine().then(data => {
+
+      const test = async () => {
+        const data = await wire.readLine();
         expect(data).toBe('some data');
-        done();
-      });
+      };
       stream.write('some data\r\n');
+      await test();
     });
 
     it('should use ending from options', async () => {
@@ -176,14 +179,17 @@ describe('Wire', () => {
       expect(await wire.readUntil('data')).toBe('some ');
     });
 
-    it('should wait for data to be available', done => {
+    it('should wait for data to be available', async () => {
       const stream = new PassThrough();
       const wire = new Wire(stream);
-      wire.readUntil('data').then(data => {
+
+      const test = async () => {
+        const data = await wire.readUntil('data');
         expect(data).toBe('some ');
-        done();
-      });
+      };
+
       stream.write('some data');
+      await test();
     });
   });
 
@@ -229,17 +235,18 @@ describe('Wire', () => {
   });
 
   describe('waitFor', () => {
-    it('should wait for data to match predicate', done => {
+    it('should wait for data to match predicate', async () => {
       const stream = new PassThrough();
       const wire = new Wire(stream);
-      wire
-        .waitFor(buffer => buffer.includes('data'))
-        .then(async buffer => {
-          expect(buffer).toBe('some data\r\n');
-          expect(await wire.readLine()).toBe('some data');
-          done();
-        });
+
+      const test = async () => {
+        const buffer = await wire.waitFor(buffer => buffer.includes('data'));
+        expect(buffer).toBe('some data\r\n');
+        expect(await wire.readLine()).toBe('some data');
+      };
+
       stream.write('some data\r\n');
+      await test();
     });
   });
 
