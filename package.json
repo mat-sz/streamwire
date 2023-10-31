@@ -1,6 +1,6 @@
 {
   "name": "streamwire",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Node.js Duplex wrapper for text-based protocols.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
