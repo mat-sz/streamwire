@@ -1,4 +1,5 @@
-import { Duplex, EventEmitter } from 'stream';
+import { Duplex } from 'stream';
+import { EventEmitter } from 'events';
 
 export interface WireReadUntilOptions {
   /**
